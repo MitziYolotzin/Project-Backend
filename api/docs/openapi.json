@@ -1,0 +1,1691 @@
+{
+  "openapi": "3.0.0",
+  "servers": [
+    {
+      "description": "SEO Keywords Tool",
+      "url": "http://localhost:8000"
+    },
+    {
+      "description": "SEO Keywords Tool",
+      "url": "http://backend.borjamediavilla.com"
+    }
+  ],
+  "info": {
+    "version": "1.1.0-oas3",
+    "title": "🤖 SEO KeywordsTool Backend",
+    "description": "# The best way to get **SEO** data.\nProvide SERP results With API user registration capabilities."
+  },
+  "security": [
+    {
+      "application": [
+        "read",
+        "write"
+      ]
+    }
+  ],
+  "paths": {
+    "/ping": {
+      "get": {
+        "summary": "Server heartbeat operation",
+        "description": "This operation shows current *status* of server.<br/> If `200` then all ok, if `500` a problem is there.<br/> __Dev Oriented Endpoint__",
+        "security": [],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/geolocation": {
+      "summary": "Obtain your local data",
+      "description": "Based on [ipstack](https://ipstack.com). You can use [ipify](http://api.ipify.org/) to get your IP. Give me your ip and you'll get a lot more.",
+      "post": {
+        "operationId": "postGeolocation",
+        "summary": "Gimme your IP, I'll give more info about you.",
+        "description": "Using [ipstack](https://ipstack.com),  retrieve general info based on your IP<br/> Main purpose is getting *language* and *country*.<br/> > Data must be modified in client to obtain all that is needed.<br/> > Maybe do heavy format in server?",
+        "security": [],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Geo"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          },
+          "405": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientError"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/api/v2/auth": {
+      "summary": "Get info about Endpoint",
+      "description": "Return info",
+      "get": {
+        "summary": "get Info about /auth Endpoint",
+        "description": "Get Info",
+        "operationId": "getAuth",
+        "security": [],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Info"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v2/auth/login": {
+      "summary": "Get jwt token with your email and password",
+      "description": "Send me your credentials, I'll tell you if you can enter",
+      "post": {
+        "operationId": "postAuthLogin",
+        "summary": "Validate your user to use KeywordsTool",
+        "description": "Given email and password, create and return jwt token and DB id",
+        "security": [],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Login"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Login200"
+          },
+          "401": {
+            "description": "email or password is wrong",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientError"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientError"
+                }
+              }
+            }
+          },
+          "409": {
+            "$ref": "#/components/responses/Email409"
+          },
+          "422": {
+            "description": "Errors in Validation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientError"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v2/auth/signup": {
+      "summary": "Create user in database of Users",
+      "description": "If you want access come here first",
+      "post": {
+        "operationId": "postAuthSignup",
+        "summary": "Get access for KeywordsTool",
+        "description": "Give an name, an email, and a password, we register all in our databases",
+        "security": [],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Signup"
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/SignUp201"
+          },
+          "409": {
+            "$ref": "#/components/responses/Email409"
+          },
+          "422": {
+            "description": "Errors in Validation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v2/user": {
+      "summary": "User related operations",
+      "description": "I dont have  id here",
+      "get": {
+        "summary": "Info about /user Endpoint",
+        "description": "Return an explanation of endpoint",
+        "operationId": "getUser",
+        "security": [],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Info"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "tags": [
+          "user"
+        ]
+      },
+      "post": {
+        "operationId": "postUser",
+        "summary": "CREATE an User by request",
+        "description": "TODO Add the role LATER",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/JWT"
+          }
+        ],
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/UserCreate201"
+          },
+          "409": {
+            "$ref": "#/components/responses/Email409"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "4XX": {
+            "$ref": "#/components/responses/ClientError"
+          }
+        },
+        "requestBody": {
+          "$ref": "#/components/requestBodies/User"
+        },
+        "tags": [
+          "user"
+        ]
+      }
+    },
+    "/api/v2/user/{userId}": {
+      "summary": "operations in User from specific id",
+      "description": "Need to have a valid token",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/JWT"
+        },
+        {
+          "$ref": "#/components/parameters/UserId"
+        }
+      ],
+      "get": {
+        "operationId": "getUserId",
+        "summary": "READ info about certain user",
+        "description": "provide an id (and a valid token) to get the info of the user the id belongs",
+        "responses": {
+          "200": {
+            "description": "The User Object returned successfuly",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User201"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No user found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientError"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "tags": [
+          "user"
+        ]
+      },
+      "put": {
+        "operationId": "putUser",
+        "summary": "UPDATE user",
+        "description": "Modify current info of user",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/User"
+        },
+        "responses": {
+          "201": {
+            "description": "The User Object Updated successfuly",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User201"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientError"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "tags": [
+          "user"
+        ]
+      },
+      "delete": {
+        "operationId": "deleteUser",
+        "summary": "DELETE the user",
+        "description": "Give an ID and I will delete the user that belongs to",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          },
+          "404": {
+            "description": "BAD_REQUEST_ERROR",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientError"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "tags": [
+          "user"
+        ]
+      }
+    },
+    "/api/v2/users": {
+      "summary": "Pertains all the users",
+      "description": "Operations made with all the users",
+      "get": {
+        "operationId": "getUsers",
+        "summary": "Get a list of all users",
+        "description": "Returns an array of all users registered",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/JWT"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The Users Array returns successfuly",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Users201"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "BAD_REQUEST_ERROR",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientError"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "tags": [
+          "user"
+        ]
+      }
+    },
+    "/api/v2/seo": {
+      "summary": "get seo related info",
+      "description": "Al our main biz logic is here",
+      "get": {
+        "operationId": "getSeo",
+        "summary": "Get info about /seo endpoints",
+        "description": "Get a JSON with all the endpoints",
+        "security": [],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Info"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "tags": [
+          "seo"
+        ]
+      }
+    },
+    "/api/v2/seo/keyword": {
+      "summary": "operations related to keywords",
+      "description": "Main bone of the biz",
+      "post": {
+        "operationId": "postSeoKeyword",
+        "summary": "Search a keyword",
+        "description": "# Give the proper info and we give you juicy details<br/>\nNow you have to make this with response<br/> `const { data } = resp.data`<br/> `const { results, status } = data;`<br/> `const { serpKeywords } = results;`<br/> `const { meta, related } = serpKeywords;`<br/> > I think we can serialize this on server\n",
+        "security": [],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Keyword"
+        },
+        "responses": {
+          "201": {
+            "description": "Data for keyword returned properly",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Keyword201"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "tags": [
+          "seo"
+        ]
+      }
+    },
+    "/api/v2/seo/keyword/rank": {
+      "summary": "Give an array of sites for a keyword",
+      "description": "Info about Rank",
+      "post": {
+        "operationId": "postSeoRank",
+        "summary": "Get the a rank of sites",
+        "description": "Give us the right params, we return you a rank",
+        "security": [],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/KeywordRank"
+        },
+        "responses": {
+          "201": {
+            "description": "Data for keyword ranked returned properly",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ranked201"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "tags": [
+          "seo"
+        ]
+      }
+    },
+    "/api/v2/seo/keyword/history": {
+      "summary": "Obtain last 12 months of counts",
+      "description": "Obtain last 12 months of counts",
+      "post": {
+        "operationId": "postSeoKeywordHistory",
+        "summary": "Obtain last 12 months of counts",
+        "description": "Obtain last 12 months of counts",
+        "security": [],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/KeywordHistory"
+        },
+        "responses": {
+          "201": {
+            "description": "Data for keyword history returned properly",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/History201"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "tags": [
+          "seo"
+        ]
+      }
+    },
+    "/api/v2/seo/url/pda/{url}": {
+      "summary": "Obtain a PDA for a certain url",
+      "description": "Obtain a PDA for a certain url",
+      "get": {
+        "operationId": "getSeoPda",
+        "summary": "Obtain a PDA for a certain url",
+        "description": "Obtain a PDA for a certain url",
+        "security": [],
+        "parameters": [
+          {
+            "name": "url",
+            "in": "path",
+            "description": "url to query on moz",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data for url pda returned properly",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PDA200"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "tags": [
+          "seo"
+        ]
+      }
+    },
+    "/api/v2/seo/url/shares/{url}": {
+      "summary": "Obtain Facebook' Share count for a given url",
+      "description": "Obtain Facebook' Share count for a given url",
+      "get": {
+        "operationId": "getSeoShares",
+        "summary": "Obtain Facebook' Share count for a given url",
+        "description": "Obtain Facebook' Share count for a given url",
+        "security": [],
+        "parameters": [
+          {
+            "name": "url",
+            "in": "path",
+            "description": "url to query on facebook",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data for url engagement returned properly",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Shares200"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "tags": [
+          "seo"
+        ]
+      }
+    },
+    "/api/v2/editor": {
+      "summary": "Articles in DB",
+      "description": "Articles in DB",
+      "get": {
+        "operationId": "getEditor",
+        "summary": "Info about /editor",
+        "description": "Info about /editor",
+        "security": [],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Info"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "tags": [
+          "editor"
+        ]
+      }
+    },
+    "/api/v2/editor/plagiarism": {
+      "summary": "Check if given text is plagiarism",
+      "description": "Check if given text is plagiarism using copyleaks",
+      "post": {
+        "operationId": "postEditorPlagiarism",
+        "summary": "Check if text is copy",
+        "description": "Check if text is copy",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/JWT"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Plagiarism"
+        },
+        "responses": {
+          "201": {
+            "description": "Data informing plagiarism returned properly",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Plagiarism201"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "tags": [
+          "editor"
+        ]
+      }
+    },
+    "/api/v2/editor/article": {
+      "summary": "Article pertain",
+      "description": "Article pertain",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/JWT"
+        }
+      ],
+      "post": {
+        "operationId": "postEditorArticle",
+        "summary": "CREATE article in DB",
+        "description": "CREATE article in DB",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "tags": [
+          "editor"
+        ],
+        "deprecated": true
+      }
+    },
+    "/api/v2/editor/article/{articleId}": {
+      "summary": "Operations on article based on articleId",
+      "description": "Operations on article based on articleId",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ArticleId"
+        }
+      ],
+      "get": {
+        "operationId": "getEditorArticle",
+        "summary": "READ article based on articleId",
+        "description": "READ article based on articleId",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "tags": [
+          "editor"
+        ],
+        "deprecated": true
+      },
+      "put": {
+        "operationId": "putEditorArticle",
+        "summary": "UPDATE article based on articleId",
+        "description": "UPDATE article based on articleId",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "tags": [
+          "editor"
+        ],
+        "deprecated": true
+      },
+      "delete": {
+        "operationId": "deleteEditorArticle",
+        "summary": "DELETE article based on articleId",
+        "description": "DELETE article based on articleId",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "tags": [
+          "editor"
+        ],
+        "deprecated": true
+      }
+    },
+    "/api/v2/editor/articles": {
+      "summary": "List of articles",
+      "description": "List of articles",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/JWT"
+        }
+      ],
+      "get": {
+        "operationId": "getEditorArticles",
+        "summary": "List of articles",
+        "description": "List of articles",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "tags": [
+          "editor"
+        ],
+        "deprecated": true
+      }
+    },
+    "/api/v2/editor/article/Pdf": {
+      "summary": "Generate pdf from Html",
+      "description": "Generate pdf from Html",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/JWT"
+        }
+      ],
+      "post": {
+        "operationId": "postEditorGenPdf",
+        "summary": "Generate pdf from Html",
+        "description": "Generate pdf from Html",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Plagiarism"
+        },
+        "responses": {
+          "201": {
+            "description": "URL with pdf returned properly",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PDF201"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "tags": [
+          "editor"
+        ]
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "system",
+      "description": "Non business logic"
+    },
+    {
+      "name": "auth",
+      "description": "Login and Signup"
+    },
+    {
+      "name": "user",
+      "description": "CRUD operations on User database"
+    },
+    {
+      "name": "seo",
+      "description": "Main business. Get SEO and keywords info"
+    },
+    {
+      "name": "editor",
+      "description": "Editor related logic. CRUD operations on Editor"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "Geo": {
+        "type": "object",
+        "required": [
+          "ip"
+        ],
+        "properties": {
+          "ip": {
+            "type": "string",
+            "description": "IP address format string from the user PC",
+            "example": "127.0.0.1"
+          }
+        }
+      },
+      "Login": {
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "email",
+            "example": "example@mail.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "password with more than 8 and less than 12 alphanumeric",
+            "example": "password123"
+          }
+        }
+      },
+      "Signup": {
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name with more than 3 letters",
+            "example": "your-name"
+          },
+          "email": {
+            "type": "string",
+            "description": "email",
+            "example": "example@mail.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "password with more than 8 and less than 12 alphanumeric symbols",
+            "example": "password123"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name with more than 3 letters",
+            "example": "John Doe",
+            "minLength": 3
+          },
+          "email": {
+            "type": "string",
+            "description": "email",
+            "example": "example@mail.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "password with more than 8 and less than 12 alphanumeric symbols",
+            "example": "password123",
+            "minLength": 8,
+            "maxLength": 12
+          }
+        },
+        "xml": {
+          "name": "User"
+        }
+      },
+      "Keyword": {
+        "type": "object",
+        "required": [
+          "keyword",
+          "language",
+          "country_code"
+        ],
+        "properties": {
+          "keyword": {
+            "type": "string",
+            "description": "Word or words to be queried",
+            "example": "Casas en Alquiler en Barcelona"
+          },
+          "language": {
+            "type": "string",
+            "description": "language in 2 letters format (i.e. *en, es, fr*)",
+            "example": "Spanish"
+          },
+          "country_code": {
+            "type": "string",
+            "description": "Country code in 2 letters format (i.e. *US, ES, FR*)",
+            "example": "es"
+          },
+          "limit": {
+            "type": "number",
+            "description": "Number of maximun returned results",
+            "example": 10
+          }
+        }
+      },
+      "KeywordRank": {
+        "type": "object",
+        "required": [
+          "key",
+          "se_language",
+          "loc_id"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Word or words to be query",
+            "example": "Casas en Alquiler en Barcelona"
+          },
+          "se_language": {
+            "type": "string",
+            "description": "search engine language",
+            "example": "Espanol (Latinoamerica)"
+          },
+          "se_name": {
+            "type": "string",
+            "description": "search engine url",
+            "example": "google.com"
+          },
+          "loc_id": {
+            "type": "number",
+            "description": "Id in Google format",
+            "example": 2068
+          }
+        }
+      },
+      "KeywordHistory": {
+        "type": "object",
+        "required": [
+          "keyword",
+          "language",
+          "country_code"
+        ],
+        "properties": {
+          "keyword": {
+            "type": "string",
+            "description": "Word or words to be query",
+            "example": "Casas en Alquiler en Barcelona"
+          },
+          "language": {
+            "type": "string",
+            "description": "language in 2 letters format",
+            "example": "Spanish"
+          },
+          "country_code": {
+            "type": "string",
+            "description": "Country code in 2 letters format",
+            "example": "es"
+          }
+        }
+      },
+      "Plagiarism": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "html string",
+            "example": "Hello World"
+          }
+        }
+      },
+      "Pdf": {
+        "type": "object",
+        "properties": {
+          "html": {
+            "type": "string",
+            "description": "html string",
+            "example": "<h1>Hello World<h1/>"
+          },
+          "fileName": {
+            "type": "string",
+            "description": "a filename endend with .pdf",
+            "example": "test.pdf"
+          }
+        }
+      },
+      "Ok": {
+        "type": "object",
+        "properties": {
+          "sucess": {
+            "type": "boolean"
+          },
+          "msg": {
+            "type": "string",
+            "description": "Explanatory message"
+          },
+          "data": {
+            "type": "object",
+            "description": "object with valuable data"
+          }
+        }
+      },
+      "ServerError": {
+        "type": "object",
+        "properties": {
+          "sucess": {
+            "type": "boolean"
+          },
+          "msg": {
+            "type": "string",
+            "description": "Explanatory message"
+          },
+          "errors": {
+            "description": "object with valuable data",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "description": "Describe the error",
+              "properties": {
+                "msg": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "example": {
+          "sucess": false,
+          "msg": "Internal Server Error",
+          "errors": [
+            {
+              "msg": "error1"
+            },
+            {
+              "msg": "error2"
+            },
+            "...otherErrors"
+          ]
+        }
+      },
+      "ClientError": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "msg": {
+            "type": "string"
+          },
+          "errors": {
+            "description": "object with valuable data",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "description": "Describe the error",
+              "properties": {
+                "msg": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "example": {
+          "sucess": false,
+          "msg": "Client Sent Incorrect or incomplete Data",
+          "errors": [
+            {
+              "msg": "error1"
+            },
+            {
+              "msg": "error2"
+            },
+            "...otherErrors"
+          ]
+        }
+      },
+      "Login200": {
+        "type": "object",
+        "properties": {
+          "sucess": {
+            "type": "boolean"
+          },
+          "msg": {
+            "type": "string",
+            "description": "Explanatory message"
+          },
+          "data": {
+            "type": "object",
+            "description": "object with valuable data",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "token": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "User201": {
+        "type": "object",
+        "properties": {
+          "sucess": {
+            "type": "boolean"
+          },
+          "msg": {
+            "type": "string",
+            "description": "Explanatory message"
+          },
+          "data": {
+            "type": "object",
+            "description": "object with valuable data",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "Users201": {
+        "type": "object",
+        "properties": {
+          "sucess": {
+            "type": "boolean"
+          },
+          "msg": {
+            "type": "string",
+            "description": "Explanatory message"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Keyword201": {
+        "type": "object",
+        "properties": {
+          "sucess": {
+            "type": "boolean"
+          },
+          "msg": {
+            "type": "string",
+            "description": "Explanatory message"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string"
+              },
+              "serpKeywords": {
+                "type": "object"
+              },
+              "related": {
+                "type": "string"
+              },
+              "meta": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "Ranked201": {
+        "type": "object",
+        "properties": {
+          "sucess": {
+            "type": "boolean"
+          },
+          "msg": {
+            "type": "string",
+            "description": "Explanatory message"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string"
+              },
+              "organic": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "result_url": {
+                      "type": "string"
+                    },
+                    "result_position": {
+                      "type": "string"
+                    },
+                    "result_title": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "History201": {
+        "type": "object",
+        "properties": {
+          "sucess": {
+            "type": "boolean"
+          },
+          "msg": {
+            "type": "string",
+            "description": "Explanatory message"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "year": {
+                  "type": "string"
+                },
+                "month": {
+                  "type": "string"
+                },
+                "count": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "PDA200": {
+        "type": "object",
+        "properties": {
+          "sucess": {
+            "type": "boolean"
+          },
+          "msg": {
+            "type": "string",
+            "description": "Explanatory message"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "pda": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "Shares200": {
+        "type": "object",
+        "properties": {
+          "sucess": {
+            "type": "boolean"
+          },
+          "msg": {
+            "type": "string",
+            "description": "Explanatory message"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "engagement": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "Plagiarism201": {
+        "type": "object",
+        "properties": {
+          "sucess": {
+            "type": "boolean"
+          },
+          "msg": {
+            "type": "string",
+            "description": "Explanatory message"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string"
+              },
+              "success": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "PDF201": {
+        "type": "object",
+        "properties": {
+          "sucess": {
+            "type": "boolean"
+          },
+          "msg": {
+            "type": "string",
+            "description": "Explanatory message"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "pdf": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "Info": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "msg": {
+            "type": "string",
+            "description": "Explanatory message"
+          },
+          "docsUrl": {
+            "type": "string",
+            "description": "Where to find help"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "Geo": {
+        "description": "IP needed to get",
+        "required": true,
+        "content": {
+          "application/x-www-form-urlencoded": {
+            "schema": {
+              "$ref": "#/components/schemas/Geo"
+            }
+          },
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Geo"
+            }
+          }
+        }
+      },
+      "Login": {
+        "description": "User object",
+        "required": true,
+        "content": {
+          "application/x-www-form-urlencoded": {
+            "schema": {
+              "$ref": "#/components/schemas/Login"
+            }
+          },
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Login"
+            }
+          }
+        }
+      },
+      "Signup": {
+        "description": "User object",
+        "required": true,
+        "content": {
+          "application/x-www-form-urlencoded": {
+            "schema": {
+              "$ref": "#/components/schemas/Signup"
+            }
+          },
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Signup"
+            }
+          }
+        }
+      },
+      "User": {
+        "description": "User object",
+        "required": true,
+        "content": {
+          "application/x-www-form-urlencoded": {
+            "schema": {
+              "$ref": "#/components/schemas/User"
+            }
+          },
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/User"
+            }
+          }
+        }
+      },
+      "Keyword": {
+        "description": "Keyword object",
+        "required": true,
+        "content": {
+          "application/x-www-form-urlencoded": {
+            "schema": {
+              "$ref": "#/components/schemas/Keyword"
+            }
+          },
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Keyword"
+            }
+          }
+        }
+      },
+      "KeywordRank": {
+        "description": "KeywordRank object",
+        "required": true,
+        "content": {
+          "application/x-www-form-urlencoded": {
+            "schema": {
+              "$ref": "#/components/schemas/KeywordRank"
+            }
+          },
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/KeywordRank"
+            }
+          }
+        }
+      },
+      "KeywordHistory": {
+        "description": "KeywordHistory object",
+        "required": true,
+        "content": {
+          "application/x-www-form-urlencoded": {
+            "schema": {
+              "$ref": "#/components/schemas/KeywordHistory"
+            }
+          },
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/KeywordHistory"
+            }
+          }
+        }
+      },
+      "Plagiarism": {
+        "description": "Plagiarism object",
+        "required": true,
+        "content": {
+          "application/x-www-form-urlencoded": {
+            "schema": {
+              "$ref": "#/components/schemas/Plagiarism"
+            }
+          },
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Plagiarism"
+            }
+          }
+        }
+      },
+      "Pdf": {
+        "description": "Pdf object",
+        "required": true,
+        "content": {
+          "application/x-www-form-urlencoded": {
+            "schema": {
+              "$ref": "#/components/schemas/Pdf"
+            }
+          },
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Pdf"
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "ServerError": {
+        "description": "Internal Server Error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ServerError"
+            }
+          }
+        }
+      },
+      "ClientError": {
+        "description": "Client Sent Incorrect or incomplete Data",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ClientError"
+            }
+          }
+        }
+      },
+      "Email409": {
+        "description": "Email already exists",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ClientError"
+            }
+          }
+        }
+      },
+      "Ok": {
+        "description": "The petition returned successfuly",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Ok"
+            }
+          }
+        }
+      },
+      "Login200": {
+        "description": "User Log in successfully (Credentials email, token and id inside of data)",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Login200"
+            }
+          }
+        },
+        "links": {
+          "getUserById": {
+            "operationId": "getUserId",
+            "parameters": {
+              "userId": "$response.body#/data/id"
+            },
+            "description": "The `id` value returned in the response can be used as the `userId` parameter in `GET /user/{userId}`.\n"
+          }
+        }
+      },
+      "SignUp201": {
+        "description": "User Sign Up successfully (Credentials email, name and password inside of data)",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/User201"
+            }
+          }
+        },
+        "links": {
+          "getEmail": {
+            "operationId": "postAuthLogin",
+            "parameters": {
+              "userId": "$response.body#/data/email"
+            },
+            "description": "The `email` value returned in the response can be used as the `email` parameter in `POST /auth/login`.\n"
+          }
+        }
+      },
+      "UserCreate201": {
+        "description": "User Created Successfuly",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/User201"
+            }
+          }
+        },
+        "links": {
+          "getEmail": {
+            "operationId": "postAuthLogin",
+            "parameters": {
+              "userId": "$response.body#/data/email"
+            },
+            "description": "The `email` value returned in the response can be used as the `email` parameter in `POST /auth/login`.\n"
+          }
+        }
+      },
+      "Info": {
+        "description": "Info about this path",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Info"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "api_key": {
+        "type": "apiKey",
+        "name": "api_key",
+        "in": "header"
+      }
+    },
+    "parameters": {
+      "JWT": {
+        "in": "header",
+        "name": "x-access-token",
+        "description": "jwt Token given in /login step",
+        "schema": {
+          "type": "string"
+        },
+        "required": true
+      },
+      "UserId": {
+        "name": "userId",
+        "in": "path",
+        "description": "ID of user to return",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "ArticleId": {
+        "name": "articleId",
+        "in": "path",
+        "description": "ID of article to return",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
