@@ -55,8 +55,10 @@ module.exports = function () {
     start = () => {
         let hostname = server.get('hostname'),
             port = server.get('port');
+        console.error( process.env.TEST)
+
         server.listen(port, function () {
-            console.log('KeywordsTool Auth Server Ready - http://' + hostname + ':' + port + '/docs');
+            console.log('backendBQ - http://' + hostname + ':' + port + '/docs');
         });
     };
     return {

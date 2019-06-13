@@ -1,17 +1,13 @@
 
 const {
     name,
-    version,
-    description,
-    author
+    version
 } = require('../../package.json')
 
 const ping = (_req, res) => {
     res.status(200).json({
         name,
-        description,
         version,
-        author,
         uptime: process.uptime()
     })
 }
